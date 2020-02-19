@@ -1,113 +1,86 @@
-﻿using System.ComponentModel;
-using System.Reflection;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D;
 
-namespace GoFish
+public class Card : MonoBehaviour
 {
-    /// <summary>
-    /// SetFaceUp(false) clears card's face value
-    /// To display a card's value, call SetCardValue(byte) to assign the Rank and the Suit to the card, then call SetFaceUp(true)
-    /// </summary>
-    public class Card : MonoBehaviour
+    public enum CardType { None, CardBack, Card1, Card2, Card3, Card4, Card5, Card6, Card7, Card8, Card9, Card10, CardBattle }
+
+    private const float CARD_SCALE = 0.2f;
+
+    [SerializeField]
+	private SpriteAtlas atlas;
+
+    // The type that should be drawn on screen
+	[SerializeField]
+	private CardType currentType;
+
+    // The type drawn on screen
+	private CardType drawnType;
+
+    // The type of the card when face up
+    private CardType faceType;
+
+	private bool hidden;
+
+	private SpriteRenderer myRenderer;
+
+    private BoxCollider2D collider;
+
+    // Start is called before the first frame update
+    void Start()
     {
-        public static Ranks GetRank(byte value)
-        {
-            return (Ranks)(value / 4 + 1);
-        }
+        Debug.Log("In Start of Card.cs");
+        myRenderer = GetComponent<SpriteRenderer>();
+        drawnType = CardType.None;
+        collider = GetComponent<BoxCollider2D>();
+        transform.localScale = new Vector3(CARD_SCALE, CARD_SCALE, 1);
+    }
 
-        public static Suits GetSuit(byte value)
-        {
-            return (Suits)(value % 4);
-        }
+    // Update is called once per frame
+    void Update()
+    {
+        UpdateSprite();
+    }
 
-        public SpriteAtlas Atlas;
-
-        public Suits Suit = Suits.NoSuits;
-        public Ranks Rank = Ranks.NoRanks;
-
-        public string OwnerId;
-
-        SpriteRenderer spriteRenderer;
-
-        bool faceUp = false;
-
-        void Awake()
-        {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-        }
-
-        private void Start()
-        {
-            UpdateSprite();
-        }
-
-        public void SetFaceUp(bool value)
-        {
-            faceUp = value;
-            UpdateSprite();
-
-            // Setting faceup to false also resets card's value.
-            if (value == false)
-            {
-                Rank = Ranks.NoRanks;
-                Suit = Suits.NoSuits;
-            }
-        }
-
-        public void SetCardValue(byte value)
-        {
-            // 0-3 are 1's
-            // 4-7 are 2's
-            // ...
-            // 48-51 are kings's
-            Rank = (Ranks)(value / 4 + 1);
-
-            // 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48 are Spades(0)
-            Suit = (Suits)(value % 4);
-        }
-
-        void UpdateSprite()
-        {
-            if (faceUp)
-            {
-                spriteRenderer.sprite = Atlas.GetSprite(SpriteName());
-            }
+    void UpdateSprite()
+    {
+    	if (currentType != drawnType)
+    	{
+            Debug.Log("Redrawing");
+    		myRenderer.sprite = atlas.GetSprite(currentType.ToString());
+    		drawnType = currentType;
+            if (drawnType == CardType.None)
+                collider.size = new Vector2(0, 0);
             else
-            {
-                spriteRenderer.sprite = Atlas.GetSprite(Constants.CARD_BACK_SPRITE);
-            }
-        }
+                collider.size = new Vector2(myRenderer.sprite.rect.width, myRenderer.sprite.rect.height);
+    	}
+    }
 
-        string GetRankDescription()
-        {
-            FieldInfo fieldInfo = Rank.GetType().GetField(Rank.ToString());
-            DescriptionAttribute[] attributes = fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false) as DescriptionAttribute[];
-            return attributes[0].Description;
-        }
+    void OnMouseDown()
+    {
+        Debug.Log("Mouse clicked");
+        FlipCard();
+    }
 
-        string SpriteName()
-        {
-            string testName = $"card{Suit}{GetRankDescription()}";
-            return testName;
-        }
+    public void SetProperties(CardType cardType, bool hidden)
+    {
+        faceType = cardType;
+        this.hidden = hidden;
+    }
 
-        public void SetDisplayingOrder(int order)
-        {
-            spriteRenderer.sortingOrder = order;
-        }
-
-        public void OnSelected(bool selected)
-        {
-            if (selected)
-            {
-                transform.position = (Vector2)transform.position + Vector2.up * Constants.CARD_SELECTED_OFFSET;
-            }
-            else
-            {
-                transform.position = (Vector2)transform.position - Vector2.up * Constants.CARD_SELECTED_OFFSET;
-            }
+    // Returns whether or not the card is now face up.
+    public bool FlipCard()
+    {
+        if (hidden) {
+            bool faceUp = currentType == faceType;
+            currentType = faceUp ? CardType.CardBack : faceType;
+            UpdateSprite();
+            return !faceUp;
+        } else {
+            Debug.Log("Cannot flip a card that is public");
+            return true;
         }
     }
 }
-
