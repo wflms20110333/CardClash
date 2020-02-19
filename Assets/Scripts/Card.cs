@@ -20,6 +20,7 @@ public class Card : MonoBehaviour
 	private CardType drawnType;
 
     // The type of the card when face up
+    [SerializeField]
     private CardType faceType;
 
 	private bool hidden;
@@ -33,8 +34,9 @@ public class Card : MonoBehaviour
     {
         Debug.Log("In Start of Card.cs");
         myRenderer = GetComponent<SpriteRenderer>();
-        drawnType = CardType.None;
         collider = GetComponent<BoxCollider2D>();
+        currentType = CardType.CardBack;
+        drawnType = CardType.None;
         transform.localScale = new Vector3(CARD_SCALE, CARD_SCALE, 1);
     }
 
@@ -64,9 +66,13 @@ public class Card : MonoBehaviour
         FlipCard();
     }
 
-    public void SetProperties(CardType cardType, bool hidden)
+    public void SetCardType(CardType cardType)
     {
         faceType = cardType;
+    }
+
+    public void SetHidden(bool hidden)
+    {
         this.hidden = hidden;
     }
 
