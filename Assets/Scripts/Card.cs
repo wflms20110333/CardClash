@@ -7,9 +7,9 @@ namespace CardClash
 {
     public class Card : MonoBehaviour
     {
-        SpriteRenderer renderer;
+        SpriteRenderer spriteRenderer;
 
-        BoxCollider2D collider;
+        BoxCollider2D boxCollider;
         [SerializeField]
         SpriteAtlas atlas;
 
@@ -31,8 +31,8 @@ namespace CardClash
         void Start()
         {
             // Debug.Log("In Start of Card.cs");
-            renderer = GetComponent<SpriteRenderer>();
-            collider = GetComponent<BoxCollider2D>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            boxCollider = GetComponent<BoxCollider2D>();
             currentType = CardType.CardBack;
             drawnType = CardType.None;
             transform.localScale = new Vector3(Constants.CARD_SCALE, Constants.CARD_SCALE, 1);
@@ -49,29 +49,17 @@ namespace CardClash
             if (currentType != drawnType)
             {
                 // Debug.Log("Redrawing");
-                renderer.sprite = atlas.GetSprite(currentType.ToString());
+                spriteRenderer.sprite = atlas.GetSprite(currentType.ToString());
                 drawnType = currentType;
-                // if (drawnType == CardType.None)
-                //     collider.size = new Vector2(0, 0);
-                // else
-                //     collider.size = new Vector2(renderer.sprite.rect.width, renderer.sprite.rect.height);
-                // collider.bounds.size = renderer.bounds.size;
-                // collider.bounds.Encapsulate(renderer.bounds.size);
-                Vector2 S = renderer.sprite.bounds.size;
-                collider.size = S;
-                collider.center = new Vector2 ((S.x / 2), 0);
+                if (drawnType == CardType.None)
+                    boxCollider.size = new Vector2(0, 0);
+                else
+                    boxCollider.size = spriteRenderer.sprite.bounds.size;
             }
         }
 
         void OnMouseDown()
         {
-            Debug.Log("Mouse clicked");
-            Debug.Log(transform.position.x + " " + transform.position.y);
-            Debug.Log(collider.transform.position.x + " " + collider.transform.position.y);
-            Debug.Log(renderer.bounds.size);
-            Debug.Log(collider.bounds.size);
-            Debug.Log(collider.size);
-
             FlipCard();
         }
 
