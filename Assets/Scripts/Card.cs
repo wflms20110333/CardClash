@@ -3,90 +3,113 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D;
 
-public class Card : MonoBehaviour
+namespace CardClash
 {
-    public enum CardType { None, CardBack, Card1, Card2, Card3, Card4, Card5, Card6, Card7, Card8, Card9, Card10, CardBattle }
-
-    private const float CARD_SCALE = 0.2f;
-
-    [SerializeField]
-	private SpriteAtlas atlas;
-
-    // The type that should be drawn on screen
-	[SerializeField]
-	private CardType currentType;
-
-    // The type drawn on screen
-	private CardType drawnType;
-
-    // The type of the card when face up
-    [SerializeField]
-    private CardType faceType;
-
-	private bool hidden;
-
-	private SpriteRenderer myRenderer;
-
-    private BoxCollider2D collider;
-
-    // Start is called before the first frame update
-    void Start()
+    public class Card : MonoBehaviour
     {
-        Debug.Log("In Start of Card.cs");
-        myRenderer = GetComponent<SpriteRenderer>();
-        collider = GetComponent<BoxCollider2D>();
-        currentType = CardType.CardBack;
-        drawnType = CardType.None;
-        transform.localScale = new Vector3(CARD_SCALE, CARD_SCALE, 1);
-    }
+        SpriteRenderer renderer;
 
-    // Update is called once per frame
-    void Update()
-    {
-        UpdateSprite();
-    }
+        BoxCollider2D collider;
+        [SerializeField]
+        SpriteAtlas atlas;
 
-    void UpdateSprite()
-    {
-    	if (currentType != drawnType)
-    	{
-            Debug.Log("Redrawing");
-    		myRenderer.sprite = atlas.GetSprite(currentType.ToString());
-    		drawnType = currentType;
-            if (drawnType == CardType.None)
-                collider.size = new Vector2(0, 0);
-            else
-                collider.size = new Vector2(myRenderer.sprite.rect.width, myRenderer.sprite.rect.height);
-    	}
-    }
+        // The type that should be drawn on screen
+        [SerializeField]
+        CardType currentType;
 
-    void OnMouseDown()
-    {
-        Debug.Log("Mouse clicked");
-        FlipCard();
-    }
+        // The type drawn on screen
+        CardType drawnType;
 
-    public void SetCardType(CardType cardType)
-    {
-        faceType = cardType;
-    }
+        // The type of the card when face up
+        [SerializeField]
+        CardType faceType;
 
-    public void SetHidden(bool hidden)
-    {
-        this.hidden = hidden;
-    }
+        bool hidden;
+        int ownerId;
 
-    // Returns whether or not the card is now face up.
-    public bool FlipCard()
-    {
-        if (hidden) {
-            bool faceUp = currentType == faceType;
-            currentType = faceUp ? CardType.CardBack : faceType;
+        // Start is called before the first frame update
+        void Start()
+        {
+            // Debug.Log("In Start of Card.cs");
+            renderer = GetComponent<SpriteRenderer>();
+            collider = GetComponent<BoxCollider2D>();
+            currentType = CardType.CardBack;
+            drawnType = CardType.None;
+            transform.localScale = new Vector3(Constants.CARD_SCALE, Constants.CARD_SCALE, 1);
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
             UpdateSprite();
-            return !faceUp;
-        } else {
-            Debug.Log("Cannot flip a card that is public");
-            return true;
+        }
+
+        void UpdateSprite()
+        {
+            if (currentType != drawnType)
+            {
+                // Debug.Log("Redrawing");
+                renderer.sprite = atlas.GetSprite(currentType.ToString());
+                drawnType = currentType;
+                // if (drawnType == CardType.None)
+                //     collider.size = new Vector2(0, 0);
+                // else
+                //     collider.size = new Vector2(renderer.sprite.rect.width, renderer.sprite.rect.height);
+                // collider.bounds.size = renderer.bounds.size;
+                // collider.bounds.Encapsulate(renderer.bounds.size);
+                Vector2 S = renderer.sprite.bounds.size;
+                collider.size = S;
+                collider.center = new Vector2 ((S.x / 2), 0);
+            }
+        }
+
+        void OnMouseDown()
+        {
+            Debug.Log("Mouse clicked");
+            Debug.Log(transform.position.x + " " + transform.position.y);
+            Debug.Log(collider.transform.position.x + " " + collider.transform.position.y);
+            Debug.Log(renderer.bounds.size);
+            Debug.Log(collider.bounds.size);
+            Debug.Log(collider.size);
+
+            FlipCard();
+        }
+
+        public void SetCardType(CardType cardType)
+        {
+            faceType = cardType;
+        }
+
+        public void SetHidden(bool hidden)
+        {
+            this.hidden = hidden;
+        }
+
+        public void SetOwnerId(int ownerId)
+        {
+            this.ownerId = ownerId;
+        }
+
+        // Attempts to flip a card.
+        public void FlipCard()
+        {
+            SetFaceUp(currentType != faceType);
+        }
+
+        public void SetFaceUp(bool up)
+        {
+            if (!up && !hidden) {
+                Debug.Log("Cannot flip a card that is public to face down");
+                return;
+            }
+            currentType = up ? faceType : CardType.CardBack;
+            UpdateSprite();
+        }
+
+        public void MoveTo(Vector2 newPosition)
+        {
+            transform.position = new Vector3(newPosition.x, newPosition.y, transform.position.z);
+            // TODO: animate!
         }
     }
 }
