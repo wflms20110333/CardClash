@@ -68,6 +68,11 @@ namespace CardClash
             faceType = cardType;
         }
 
+        public bool IsHidden()
+        {
+            return this.hidden;
+        }
+
         public void SetHidden(bool hidden)
         {
             this.hidden = hidden;
@@ -92,12 +97,6 @@ namespace CardClash
             }
             currentType = up ? faceType : CardType.CardBack;
             UpdateSprite();
-        }
-
-        public void MoveTo(Vector2 newPosition)
-        {
-            transform.position = new Vector3(newPosition.x, newPosition.y, transform.position.z);
-            // TODO: animate!
         }
     }
 }

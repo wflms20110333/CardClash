@@ -27,7 +27,9 @@ namespace CardClash
         {
             // check game state
             // if playing:
-            //   one of the player's turns, on action switch to other player's turn
+            //   running through rounds. each round, each player gets a turn
+            //   a card is flipped from the deck. the other player gets a chance to challenge (a button to say all sacrificed cards are selected)
+            //   if no challenge, continue. if challenge, roll die, continue.
             // after each action, check if either player won
             // if won, end game.
         }

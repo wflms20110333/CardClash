@@ -28,7 +28,6 @@ namespace CardClash
             PublicCards.Add(card);
             card.SetOwnerId(PlayerId);
             card.SetHidden(false);
-            card.SetFaceUp(true);
         }
 
         public void receiveHiddenCard(Card card)

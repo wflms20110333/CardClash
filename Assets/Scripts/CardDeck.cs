@@ -10,11 +10,13 @@ namespace CardClash
 
         public GameObject cardPrefab;
         private Stack<Card> deck;
+        private Queue<CardAnimation> animations;
 
         // Start is called before the first frame update
         void Start()
         {
             deck = new Stack<Card>();
+            animations = new Queue<CardAnimation>();
             foreach (CardType cardType in System.Enum.GetValues(typeof(CardType))) {
                 if (cardType == CardType.None || cardType == CardType.CardBack)
                     continue;
@@ -29,7 +31,11 @@ namespace CardClash
         // Update is called once per frame
         void Update()
         {
-            
+            // Play animations in queued order
+            if (animations.Count > 0 && animations.Peek().Play()) {
+                Debug.Log("Card animation finished! Final position: " + animations.Peek().card.transform.position);
+                animations.Dequeue();
+            }
         }
 
         // Shuffles the deck of cards. Modifier method.
@@ -66,12 +72,12 @@ namespace CardClash
             Debug.Log("Dealing a " + (hidden ? "hidden" : "public") + " card to player " + player.PlayerId);
             Card card = deck.Pop();
             if (hidden) {
-                Vector2 newPosition = player.NextHiddenCardPosition();
-                card.MoveTo(newPosition);
+                Vector2 newPosition2d = player.NextHiddenCardPosition();
+                animations.Enqueue(new CardAnimation(card, new Vector3(newPosition2d.x, newPosition2d.y, card.transform.position.z)));
                 player.receiveHiddenCard(card);
             } else {
-                Vector2 newPosition = player.NextPublicCardPosition();
-                card.MoveTo(newPosition);
+                Vector2 newPosition2d = player.NextPublicCardPosition();
+                animations.Enqueue(new CardAnimation(card, new Vector3(newPosition2d.x, newPosition2d.y, card.transform.position.z)));
                 player.receivePublicCard(card);
             }
         }
