@@ -69,7 +69,7 @@ namespace CardClash
 
         public void DealCard(Player player, bool hidden)
         {
-            Debug.Log("Dealing a " + (hidden ? "hidden" : "public") + " card to player " + player.PlayerId);
+            Debug.Log("Dealing a " + (hidden ? "hidden" : "public") + " card to player " + player.GetPlayerId());
             Card card = deck.Pop();
             if (hidden) {
                 Vector2 newPosition2d = player.NextHiddenCardPosition();
@@ -80,6 +80,11 @@ namespace CardClash
                 animations.Enqueue(new CardAnimation(card, new Vector3(newPosition2d.x, newPosition2d.y, card.transform.position.z)));
                 player.receivePublicCard(card);
             }
+        }
+
+        public void FlipTopCard()
+        {
+            animations.Enqueue(new CardAnimation(deck.Peek()));
         }
 
         private void CreateCards(CardType cardType, int count)

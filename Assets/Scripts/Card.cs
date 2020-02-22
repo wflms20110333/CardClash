@@ -7,6 +7,8 @@ namespace CardClash
 {
     public class Card : MonoBehaviour
     {
+        Material defaultMaterial;
+        Material cardOutlineMaterial;
         SpriteRenderer spriteRenderer;
 
         BoxCollider2D boxCollider;
@@ -30,7 +32,8 @@ namespace CardClash
         // Start is called before the first frame update
         void Start()
         {
-            // Debug.Log("In Start of Card.cs");
+            defaultMaterial = new Material(Shader.Find("Sprites/Default"));
+            cardOutlineMaterial = Resources.Load<Material>("Materials/CardOutline");
             spriteRenderer = GetComponent<SpriteRenderer>();
             boxCollider = GetComponent<BoxCollider2D>();
             currentType = CardType.CardBack;
@@ -65,7 +68,12 @@ namespace CardClash
 
         public void SetCardType(CardType cardType)
         {
-            faceType = cardType;
+            this.faceType = cardType;
+        }
+
+        public CardType GetCardType()
+        {
+            return this.faceType;
         }
 
         public bool IsHidden()
@@ -84,7 +92,7 @@ namespace CardClash
         }
 
         // Attempts to flip a card.
-        public void FlipCard()
+        private void FlipCard()
         {
             SetFaceUp(currentType != faceType);
         }
@@ -97,6 +105,11 @@ namespace CardClash
             }
             currentType = up ? faceType : CardType.CardBack;
             UpdateSprite();
+        }
+
+        public void SetOutline(bool outline)
+        {
+            spriteRenderer.material = outline ? cardOutlineMaterial : defaultMaterial;
         }
     }
 }

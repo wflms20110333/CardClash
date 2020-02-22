@@ -17,15 +17,6 @@ namespace CardClash
         public const float  CARD_SNAP_DISTANCE = 0.01f;
         public const float  CARD_MOVEMENT_SPEED = 25.0f;
         public const float  CARD_ROTATION_SPEED = 8f;
-        // public const float  DECK_CARD_POSITION_OFFSET = 0.2f;
-        // public const string CARD_BACK_SPRITE = "cardBack_red5";
-        // public const float  CARD_SELECTED_OFFSET = 0.3f;
-        // public const int    PLAYER_INITIAL_CARDS = 7;
-        // public const float  CARD_MOVEMENT_SPEED = 25.0f;
-        // public const float  CARD_SNAP_DISTANCE = 0.01f;
-        // public const float  CARD_ROTATION_SPEED = 8f;
-        // public const float  BOOK_MAX_RANDOM_ROTATION = 15f;
-        // public const byte   POOL_IS_EMPTY = 255;
     }
 
     public enum CardType
