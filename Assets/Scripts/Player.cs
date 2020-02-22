@@ -29,6 +29,16 @@ namespace CardClash
             return this.playerId;
         }
 
+        public bool IsChallenging()
+        {
+            return challenging;
+        }
+
+        public void SetChallenging(bool challenging)
+        {
+            this.challenging = challenging;
+        }
+
         public Vector2 NextPublicCardPosition()
         {
             return publicCardPosition + Vector2.right * Constants.PLAYER_PUBLIC_CARD_POSITION_OFFSET * publicCards.Count;
@@ -42,14 +52,14 @@ namespace CardClash
         public void receivePublicCard(Card card)
         {
             publicCards.Add(card);
-            card.SetOwnerId(playerId);
+            card.SetOwner(this);
             card.SetHidden(false);
         }
 
         public void receiveHiddenCard(Card card)
         {
             hiddenCards.Add(card);
-            card.SetOwnerId(playerId);
+            card.SetOwner(this);
             card.SetHidden(true);
             card.SetFaceUp(false);
         }

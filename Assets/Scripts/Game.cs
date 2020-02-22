@@ -43,6 +43,8 @@ namespace CardClash
             // if won, end game.
             if (gameState == GameState.TurnStarted) {
                 cardDeck.FlipTopCard();
+                players[turnPlayer].SetChallenging(true);
+                players[turnPlayer ^ 1].SetChallenging(false);
                 gameState = GameState.WaitingForChallenge;
             } else if (gameState == GameState.WaitingForChallenge) {
                 // keep waiting, do nothing, maybe delete this chunk?

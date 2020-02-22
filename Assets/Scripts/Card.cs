@@ -27,7 +27,9 @@ namespace CardClash
         CardType faceType;
 
         bool hidden;
-        int ownerId;
+        Player owner;
+
+        bool selected;
 
         // Start is called before the first frame update
         void Start()
@@ -39,6 +41,7 @@ namespace CardClash
             currentType = CardType.CardBack;
             drawnType = CardType.None;
             transform.localScale = new Vector3(Constants.CARD_SCALE, Constants.CARD_SCALE, 1);
+            selected = false;
         }
 
         // Update is called once per frame
@@ -61,9 +64,15 @@ namespace CardClash
             }
         }
 
+        // Not challenging: flips card
+        // Challenging, hidden cards: flip, then cycle of selection toggle
+        // Challenging, public cards: cycle of selection toggle
         void OnMouseDown()
         {
-            FlipCard();
+            if (!owner.IsChallenging() || hidden && currentType == CardType.CardBack)
+                FlipCard();
+            else
+                SetSelection(!selected);
         }
 
         public void SetCardType(CardType cardType)
@@ -86,9 +95,9 @@ namespace CardClash
             this.hidden = hidden;
         }
 
-        public void SetOwnerId(int ownerId)
+        public void SetOwner(Player owner)
         {
-            this.ownerId = ownerId;
+            this.owner = owner;
         }
 
         // Attempts to flip a card.
@@ -107,9 +116,10 @@ namespace CardClash
             UpdateSprite();
         }
 
-        public void SetOutline(bool outline)
+        public void SetSelection(bool select)
         {
-            spriteRenderer.material = outline ? cardOutlineMaterial : defaultMaterial;
+            spriteRenderer.material = select ? cardOutlineMaterial : defaultMaterial;
+            selected = select;
         }
     }
 }
